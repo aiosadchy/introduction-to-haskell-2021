@@ -12,5 +12,20 @@ sublists n l | (length l) < n = []
              | otherwise      = [(take n l)] ++ (sublists n (tail l))
 
 
--- 2 - Удалить из списка все вхождения подсписка.
---     Если после удаления в списке образовался такой же подсписок, его тоже надо удалить.
+
+-- | remove_sublist_recursive l s - удалить из списка все вхождения подсписка;
+--   если после удаления в списке образовался такой же подсписок, он тоже будет удалён.
+remove_sublist_recursive :: Eq a => [a] -> [a] -> [a]
+remove_sublist_recursive l s | found     = remove_sublist_recursive result s
+                             | otherwise = l
+    where (result, found) = remove_sublist l s
+
+-- | remove_sublist l s - удалить из списка l первое вхождение подсписка s
+remove_sublist :: Eq a => [a] -> [a] -> ([a], Bool)
+remove_sublist l [] = (l, False)
+remove_sublist [] _ = ([], False)
+remove_sublist l s | (take len l) == s = (drop len l, True)
+                   | otherwise         = ((first:rest), found)
+    where len           = length s
+          first         = head l
+          (rest, found) = remove_sublist (tail l) s
